@@ -1,0 +1,62 @@
+pipeline {
+    agent {
+        node {
+            label 'slave'
+        }
+    }
+    environment {
+        dockerhub = credentials('dockerhub')
+    }
+    stages {
+        stage('Configure EKS Cluster') {
+            steps {
+                sh 'aws eks --region eu-west-1 update-kubeconfig --name lms-cluster'
+            }
+        }
+        stage('DB Deployment') {
+            steps {
+                sh 'cd k8s && kubectl apply -f postgres-deployment.yml'
+            }
+        }
+        stage('DB Cluster IP Service') {
+            steps {
+                sh 'cd k8s && kubectl apply -f postgres-cluster-ip-service.yaml'
+            }
+        }
+        stage('DB Persistent Volume') {
+            steps {
+                sh 'cd k8s && kubectl apply -f database-persistent-volume-claim.yml'
+            }
+        }
+        stage('Docker Build') {
+            steps {
+                sh 'cd api && docker build -t muralialakuntla3/api .'
+            }
+        }
+        stage('Docker Login') {
+            steps {
+                sh 'echo $dockerhub_PSW | docker login -u $dockerhub_USR --password-stdin'
+            }
+        }
+        stage('Docker Push') {
+            steps {
+                sh 'docker push muralialakuntla3/api'
+            }
+        }
+        stage('Remove old docker images') {
+            steps {
+                sh 'docker rmi -f muralialakuntla3/api'
+            }
+        }
+        stage('Update Kubernetes Deployment') {
+            steps {
+                sh 'cd k8s && kubectl apply -f api-deployment.yml'
+            }
+        }
+        stage('Update Kubernetes Load Balancer Service') {
+            steps {
+                sh 'cd k8s && kubectl apply -f api-lb-service.yml'
+            }
+        }
+    }
+}
