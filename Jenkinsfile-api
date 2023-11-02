@@ -15,7 +15,7 @@ pipeline {
         }
         stage('DB Deployment') {
             steps {
-                sh 'cd k8s && kubectl apply -f postgres-deployment.yml'
+                sh 'cd k8s && kubectl apply -f postgres-deployment.yaml'
             }
         }
         stage('DB Cluster IP Service') {
