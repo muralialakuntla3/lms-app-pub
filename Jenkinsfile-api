@@ -25,7 +25,7 @@ pipeline {
         }
         stage('DB Persistent Volume') {
             steps {
-                sh 'cd k8s && kubectl apply -f database-persistent-volume-claim.yml'
+                sh 'cd k8s && kubectl apply -f database-persistent-volume-claim.yaml'
             }
         }
         stage('Docker Build') {
@@ -50,12 +50,12 @@ pipeline {
         }
         stage('Update Kubernetes Deployment') {
             steps {
-                sh 'cd k8s && kubectl apply -f api-deployment.yml'
+                sh 'cd k8s && kubectl apply -f api-deployment.yaml'
             }
         }
         stage('Update Kubernetes Load Balancer Service') {
             steps {
-                sh 'cd k8s && kubectl apply -f api-lb-service.yml'
+                sh 'cd k8s && kubectl apply -f api-lb-service.yaml'
             }
         }
     }
