@@ -48,12 +48,12 @@ pipeline {
                 sh 'docker rmi -f muralialakuntla3/api'
             }
         }
-        stage('Update Kubernetes Deployment') {
+        stage('backend Deployment') {
             steps {
                 sh 'cd api && kubectl apply -f api-deployment.yaml'
             }
         }
-        stage('Update Kubernetes Load Balancer Service') {
+        stage('backend Load Balancer Service') {
             steps {
                 sh 'cd api && kubectl apply -f api-load-balancer-service.yaml'
             }
