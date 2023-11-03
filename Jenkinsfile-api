@@ -25,7 +25,7 @@ pipeline {
         }
         stage('DB Persistent Volume') {
             steps {
-                sh 'cd api && kubectl apply -f database-persistent-volume-claim.yaml'
+                sh 'cd api && kubectl apply -f database-persistent-volume.yaml'
             }
         }
         stage('Docker Build') {
